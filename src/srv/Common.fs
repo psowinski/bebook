@@ -1,4 +1,4 @@
-namespace BookService.Type
+namespace BookService.CommonTypes
 open System
 
 [<AutoOpen>]
