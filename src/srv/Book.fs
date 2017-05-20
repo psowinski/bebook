@@ -1,8 +1,13 @@
 namespace BookService.Domain
 open System
-open BookService.CommonTypes
+open BookService.Common
 
 module Book =
+
+    type BookError =
+    | InvalidBookId
+    | InvalidBookName
+
     type Book = {
         id: Id option
         name: string
@@ -18,12 +23,22 @@ module Book =
     let zero =
         { id = None; name = null; startDate = DateTime.Now }
 
-    //state -> command -> event
-    let execute (state : Book) command =
-        match command with
-        | OpenBook x -> BookOpened x
+    let validateId book =
+        match book.id with
+        | Some _ -> Ok book
+        | None -> Error InvalidBookId
 
-    //state -> event -> state
-    let apply (state: Book) event =
+    let validateName book =
+        if String.IsNullOrWhiteSpace book.name
+            then Error InvalidBookName
+        else Ok book
+
+    let validateBook = validateId >> (bind validateName)
+
+    let execute state command = //state -> command -> event
+        match command with
+        | OpenBook x -> x |> validateBook |> bind (BookOpened >> Ok)
+
+    let apply state event = //state -> event -> state
         match event with
         | BookOpened x -> x
