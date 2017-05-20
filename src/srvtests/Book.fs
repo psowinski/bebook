@@ -26,7 +26,7 @@ let bookTests =
     test "validate book name when create new" {
       let cmd = OpenBook { book with name = "" }
       let actual = execute Book.zero cmd
-      Should.Expect.isErrorOf <@ InvalidBookId @> actual "Expecting book cannot be created because of invalid name"
+      Should.Expect.isErrorOf <@ InvalidBookName @> actual "Expecting book cannot be created because of invalid name"
     }
   ]
 

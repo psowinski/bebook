@@ -3,6 +3,9 @@ open System
 
 [<AutoOpen>]
 module Common =
+
+    type NonEmptyString = NonEmptyString of string
+
     type Id = Id of string
 
     let bind f x =

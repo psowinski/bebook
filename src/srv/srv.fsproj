@@ -1,12 +1,13 @@
 ﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Book.fs" />
+    <Compile Include="EdgeServices.fs" />
   </ItemGroup>
 
   <ItemGroup>
