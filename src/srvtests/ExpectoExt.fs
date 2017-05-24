@@ -1,4 +1,4 @@
-module Should.Expect
+module ShouldBe
 
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
@@ -14,13 +14,24 @@ let rec isUnionCase = function
         box >> utr >> (=) uci.Tag
     | _ -> failwith "Expression is no union case."
 
-let isError x message =
+let error x message =
     match x with
     | Error _ -> ()
     | Ok v -> Expecto.Tests.failtestf "%s. Expected Error, was Ok (%A)." message v
 
-let isErrorOf case x message =
+let ok x message =
     match x with
-    | Error v when (isUnionCase case v) -> ()
+    | Ok _ -> ()
+    | Error e ->  Expecto.Tests.failtestf "%s. Expected Ok, was Error (%A)." message e
+
+let errorOf case x message =
+    match x with
+    | Error e when (isUnionCase case e) -> ()
     | Error _
     | Ok _ -> Expecto.Tests.failtestf "%s. Expected Error of %A, was %A." message case x
+
+let okOf case x message =
+    match x with
+    | Ok s when (isUnionCase case s) -> ()
+    | Ok _
+    | Error _ -> Expecto.Tests.failtestf "%s. Expected Ok of %A, was %A." message case x
