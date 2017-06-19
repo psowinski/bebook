@@ -7,7 +7,6 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Book.fs" />
-    <Compile Include="EdgeServices.fs" />
   </ItemGroup>
 
   <ItemGroup>
