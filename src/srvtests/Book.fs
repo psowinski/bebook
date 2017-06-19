@@ -16,6 +16,18 @@ let bookTests =
       startDate = DateTime.Now }
   let openBookCmd = OpenBook bookOpenRequest
 
+  let cannotCloseBookFromState fromState = 
+      let book = { Book.zero with state = fromState }
+      let event = execute book CloseBook
+      ShouldBe.errorOf 
+           <@ InvalidArgument @> event "Expected InvalidArgument error" 
+
+  let cannotOpenBookFromState fromState = 
+      let book = { Book.zero with state = fromState }
+      let event = execute book openBookCmd
+      ShouldBe.errorOf 
+           <@ InvalidArgument @> event "Expected InvalidArgument error" 
+
   testList "Book aggregate should" [
     test "be able to open new book" {
       let event = execute Book.zero openBookCmd
@@ -35,18 +47,31 @@ let bookTests =
     }
 
     test "be not able to reopen closed book" {
-      let book = { Book.zero with state = Closed }
-      let actual = execute book openBookCmd
-      ShouldBe.errorOf 
-        <@ InvalidArgument @> actual 
-        "Closed book cannot be reopen"
+      cannotOpenBookFromState Closed      
     }    
 
     test "be not able to open twice the same book" {
+      cannotOpenBookFromState Open
+    }
+
+    test "be able to close opened book" {
       let book = { Book.zero with state = Open }
-      let actual = execute book openBookCmd
-      ShouldBe.errorOf 
-        <@ InvalidArgument @> actual
-        "Open book cannot be reopen"
-    }    
+      let event = execute book CloseBook
+      ShouldBe.okOf 
+          <@ BookClosed @> event "Expected BookClosed event" 
+    }
+
+    test "be able to apply BookClosed event" {
+      let actual = (apply Book.zero BookClosed).Success
+      let expected = { Book.zero with state = Closed }
+      Expect.equal actual expected "Expected closed book"
+    }
+
+    test "be not able to close already closed book" {
+      cannotCloseBookFromState Closed
+    }
+    
+    test "be not able to close not open book" {
+      cannotCloseBookFromState NotOpenYet
+    }
   ]

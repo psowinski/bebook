@@ -22,16 +22,17 @@ module Book =
 
     type Command =
     | OpenBook of BookOpenRequest
+    | CloseBook
 
     type Event =
     | BookOpened of BookOpenRequest
+    | BookClosed
 
     let zero =
         { id = None
           name = NonEmptyString "..."
           startDate = DateTime.Now
           state = NotOpenYet }
-
     let execute state command = //state -> command -> event
 
         let validateOpening book = 
@@ -39,10 +40,16 @@ module Book =
             | NotOpenYet -> Ok book
             | _ -> Error <| InvalidArgument "Book.state shoud be NotOpenYet"
 
+        let validateClosing book = 
+            match book.state with
+            | Open -> Ok book
+            | _ -> Error <| InvalidArgument "Book.state shoud be Open"
+
         match command with
-        | OpenBook x -> state |> 
-                        validateOpening |> 
+        | OpenBook x -> state |> validateOpening |> 
                         map (fun _ -> BookOpened x)
+        | CloseBook -> state |> validateClosing |>
+                        map (fun _ -> BookClosed)
 
     let apply state event = //state -> event -> state
         let openBook bookReq = 
@@ -53,3 +60,4 @@ module Book =
 
         match event with
         | BookOpened x -> x |> openBook |> Ok
+        | BookClosed -> { state with state = Closed } |> Ok
