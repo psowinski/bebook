@@ -52,12 +52,17 @@ module Book =
                         map (fun _ -> BookClosed)
 
     let apply state event = //state -> event -> state
+    
         let openBook bookReq = 
             { id = Some bookReq.id
               name = bookReq.name
               startDate = bookReq.startDate
               state = Open }
 
+        let closeBook () =
+            { state with state = Closed }
+
         match event with
-        | BookOpened x -> x |> openBook |> Ok
-        | BookClosed -> { state with state = Closed } |> Ok
+        | BookOpened x -> x |> openBook
+        | BookClosed -> closeBook ()
+        |> Ok
