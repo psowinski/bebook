@@ -33,6 +33,7 @@ module Book =
           name = NonEmptyString "..."
           startDate = DateTime.Now
           state = NotOpenYet }
+          
     let execute state command = //state -> command -> event
 
         let validateOpening book = 

@@ -1,1 +1,6 @@
+framework: auto-detect
 source https://api.nuget.org/v3/index.json
+
+group Fake
+    source https://api.nuget.org/v3/index.json
+    nuget Fake.Core.Targets prerelease
